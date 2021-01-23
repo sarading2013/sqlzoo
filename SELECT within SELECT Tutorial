@@ -1,0 +1,32 @@
+1.
+List each country name where the population is larger than that of 'Russia'.
+world(name, continent, area, population, gdp)
+
+select name from world
+where population >
+  (select population from world
+  where name='russia')
+
+2.
+Show the countries in Europe with a per capita GDP greater than 'United Kingdom'.
+Per Capita GDP
+The per capita GDP is the gdp/population
+
+select name from world
+where continent= 'europe'  and 
+  gdp/population >
+  (select gdp/population from world
+  where name='united kingdom')
+  
+3.
+
+List the name and continent of countries in the continents containing either Argentina or Australia. Order by name of the country.
+
+select name, continent from world
+where continent in
+  (select continent from world 
+  where name='argentina' or 
+  name='australia')
+    order by name
+    
+ 
