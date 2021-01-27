@@ -1,0 +1,99 @@
+1 NVL
+
+NVL takes two arguments and returns the first value that is not null.
+
+   NVL(x,y) = x if x is not NULL
+   NVL(x,y) = y if x is NULL
+   
+  example 1.
+NVL can be useful when you want to replace a NULL value with some other value. In this example you show the name of the party 
+for each MSP that has a party. For the MSP with no party (such as Canavan, Dennis) you show the string None.
+
+select name, party
+  , coalesce (party, 'none') as aff
+  from msg  
+  where name like 'c%'
+
+
+2 CASE
+
+CASE allows you to return different values under different conditions.
+
+If none of the conditions match (and there is not ELSE) then NULL is returned.
+
+  CASE WHEN condition1 THEN value1 
+       WHEN condition2 THEN value2  
+       ELSE def_value 
+  END 
+  
+ example 1. 
+ select mdate, team1
+  , sum(case when teamid=team1 then 1 else 0 end) score1
+  team2
+  , sum(case when teamid=team2 then 1 else 0 end) score2
+  end
+  from game left join goal on (matchid=id)
+  group by mdate, matchid, team1, team2
+  
+  
+  example 2.
+  select name, population
+   , case when population <1000000
+               then 'small'
+          when population <10000000
+               then 'medium'
+          else 'large'
+     end
+  from world
+ 
+ 
+  3 coalesce
+  
+  COALESCE takes any number of arguments and returns the first value that is not null.
+
+  COALESCE(x,y,z) = x if x is not NULL
+  COALESCE(x,y,z) = y if x is NULL and y is not NULL
+  COALESCE(x,y,z) = z if x and y are NULL but z is not NULL
+  COALESCE(x,y,z) = NULL if x and y and z are all NULL
+  
+  example 1.
+COALESCE can be useful when you want to replace a NULL value with some other value. In this example you show the name of the party for each MSP that has a party. 
+For the MSP with no party (such as Canavan, Dennis) you show the string None.
+
+select name, party 
+    , coalesce (party, 'none') as aff
+ from msp
+ where name like 'c%'
+ 
+ 
+ 4 nullif
+ 
+ NULLIF returns NULL if the two arguments are equal; otherwise NULLIF returns the first argument.
+
+   NULLIF(x,y) = NULL if x=y
+   NULLIF(x,y) = x if x != y     
+   
+   example 1.
+   select name, party 
+       , nullif (party, 'lab') as aff
+     from msp
+     where name like 'c%'
+     
+    Result:
+name	party	aff
+Campbell MSP, Colin	SNP	SNP
+Canavan MSP, Dennis	null	null
+Chisholm MSP, Malcolm	Lab	null
+Craigie MSP, Cathie	Lab	null
+Crawford JP MSP, Bruce	SNP	SNP
+Cunningham MSP, Roseanna	SNP	SNP
+Curran MSP, Ms Margaret	Lab	null
+See also
+ 
+ 
+   
+  
+  
+  
+  
+  
