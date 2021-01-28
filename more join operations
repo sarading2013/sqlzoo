@@ -1,0 +1,246 @@
+1.
+List the films where the yr is 1962 [Show id, title]
+
+select id, title 
+  from movie
+  where yr=1962
+  
+2.
+Give year of 'Citizen Kane'.
+
+select yr
+  from movie
+  where title='citizen kane'
+  
+3.
+List all of the Star Trek movies, include the id, title and yr (all of these movies include the words Star Trek in the title). Order results by year.
+
+select id, title, yr
+  from movie
+  where title like 'star trek%'
+  order by yr
+
+4.
+What id number does the actor 'Glenn Close' have?
+
+select id
+  from actor
+  where name='glenn close'
+
+5.
+What is the id of the film 'Casablanca'
+select id 
+  from movie
+  where title='casablanca'
+
+   5.1.
+   Join casting and actor on actorid/id
+   
+   select * 
+     from casting join actor 
+          on (casting.actorid=actor.id)
+     where actor.name='john hurt'
+     
+   5.2.
+   Joining three tables
+   Join casting and actor on actorid/id
+   
+   select * 
+     from movie 
+       join casting on (movie.id=casting.movieid)
+       join actor on(actorid=actor.id)
+     where actor.name='john hurt'
+     
+     Note: The result now again has one row for every element of the casting table, this time we get details of the movies as well as the name of the actor.
+     Notice that in some cases we refer to a field using just the field name (e.g. actorid) and sometimes we preceed the field name with the table
+     name (e.g. casting.actorid). You must include the table name if the field names are not unique.
+
+
+6.
+Obtain the cast list for 'Casablanca'.
+
+what is a cast list? The cast list is the names of the actors who were in the movie.
+Use movieid=11768, (or whatever value you got from the previous question)
+
+select name
+  from casting 
+    join actor on (casting.actorid=actor.id)
+    join movie on (casting.movieid=movie.id)
+  where title='casablanca'
+  
+  
+ SELECT name
+  FROM casting, actor
+  WHERE movieid=(SELECT id 
+             FROM movie 
+             WHERE title='Casablanca')
+    AND actorid=actor.id
+    
+
+7.
+Obtain the cast list for the film 'Alien'
+
+select name 
+  from casting
+    join actor on (casting.actorid=actor.id)
+    join movie on (casting.movieid=movie.id)
+  where title='alien'
+
+SELECT name
+  FROM movie, casting, actor
+  WHERE title='Alien'
+    AND movieid=movie.id
+    AND actorid=actor.id
+
+
+8.
+List the films in which 'Harrison Ford' has appeared
+
+select title 
+  from movie 
+    join casting on (movie.id=casting.movieid)
+    join actor on (casting.actorid=actor.id)
+  where name='harrison ford'
+
+
+SELECT title
+  FROM movie, casting, actor
+ WHERE name='Harrison Ford'
+    AND movieid=movie.id
+    AND actorid=actor.id
+
+
+9.
+List the films where 'Harrison Ford' has appeared - but not in the starring role. 
+[Note: the ord field of casting gives the position of the actor. If ord=1 then this actor is in the starring role]
+
+select title 
+  from movie, actor, casting
+    where name='harrison ford'
+          and movieid=movie.id
+          and actorid=actor.id
+          and ord!=1
+
+SELECT title
+  FROM movie, casting, actor
+ WHERE name='Harrison Ford'
+    AND movieid=movie.id
+    AND actorid=actor.id
+  AND ord<>1
+
+
+10.
+List the films together with the leading star for all 1962 films.
+
+select title, name 
+  from movie, actor, casting
+    where movieid=movie.id
+          and actorid=actor.id
+          and ord=1
+          and yr=1962
+
+SELECT title, name
+  FROM movie, casting, actor
+ WHERE yr=1962
+    AND movieid=movie.id
+    AND actorid=actor.id
+    AND ord=1
+
+
+11.
+Which were the busiest years for 'Rock Hudson', show the year and the number of movies he made each year for any year in which he made more than 2 movies.
+
+select yr, count(title)
+  from movie, actor, casting
+    where name='rock Hudson'
+          and movieid=movie.id
+          and actorid=actor.id
+          group by yr
+          having count(title)>2
+          
+
+SELECT yr,COUNT(title) FROM
+  movie JOIN casting ON movie.id=movieid
+        JOIN actor   ON actorid=actor.id
+where name='Rock Hudson'
+GROUP BY yr
+HAVING COUNT(title) > 2
+
+
+12.
+List the film title and the leading actor for all of the films 'Julie Andrews' played in.
+Did you get "Little Miss Marker twice"?
+Julie Andrews starred in the 1980 remake of Little Miss Marker and not the original(1934).
+
+Title is not a unique field, create a table of IDs in your subquery
+
+select title, name
+  from movie
+    join casting on (casting.movieid=movie.id)
+    join actor on (casting.actorid=actor.id)
+  where ord=1
+        and movieid in (select movieid from actor, casting
+                            where actorid=actor.id
+                                  and name='Julie andrews')
+
+
+SELECT title, name
+  FROM movie, casting, actor
+  WHERE movieid=movie.id
+    AND actorid=actor.id
+    AND ord=1
+    AND movieid IN
+    (SELECT movieid FROM casting, actor
+     WHERE actorid=actor.id
+     AND name='Julie Andrews')
+
+
+13.
+Obtain a list, in alphabetical order, of actors who've had at least 15 starring roles.
+
+SELECT name
+    FROM casting JOIN actor
+      ON  actorid = actor.id
+    WHERE ord=1
+    GROUP BY name
+    HAVING COUNT(movieid)>=15
+
+
+14.
+List the films released in the year 1978 ordered by the number of actors in the cast, then by title.
+          
+  SELECT title, COUNT(actorid)
+  FROM casting,movie                
+  WHERE yr=1978
+        AND movieid=movie.id
+  GROUP BY title
+  ORDER BY 2 DESC,1 ASC
+  
+ 15.
+List all the people who have worked with 'Art Garfunkel'.
+
+SELECT DISTINCT d.name
+FROM actor d JOIN casting a ON (a.actorid=d.id)
+   JOIN casting b on (a.movieid=b.movieid)
+   JOIN actor c on (b.actorid=c.id 
+                and c.name='Art Garfunkel')
+  WHERE d.id!=c.id
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
