@@ -1,0 +1,11 @@
+15.
+List all the people who have worked with 'Art Garfunkel'.
+
+select name 
+  from actor join casting 
+    on (actor.id=casting.actorid)
+      where movieid 
+        in (select movieid 
+              from casting join actor
+                on (actor.name='art garfunkel' and actorid=actor.id))
+        and actor.name!='art garfunkel'
